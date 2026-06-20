@@ -1,19 +1,64 @@
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (prota.isHittingTile(CollisionDirection.Bottom)) {
+        prota.vy = -150
+    }
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
     scene.cameraShake(4, 500)
     tiles.setCurrentTilemap(tilemap`level2`)
     prota.setPosition(10, 95)
-    info.startCountdown(10)
+    game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
+    info.startCountdown(60)
     level = 1
 })
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (prota.isHittingTile(CollisionDirection.Bottom)) {
-        prota.vy = -150
-    }
+controller.down.onEvent(ControllerButtonEvent.Released, function () {
+    prota.setImage(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        . . . . . 3 3 3 3 3 3 . . . . . 
+        `)
 })
 info.onCountdownEnd(function () {
     game.gameOver(false)
     game.setGameOverScoringType(game.ScoringType.HighScore)
 })
+scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
+    inimigo.setVelocity(40, 0)
+})
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    prota.setImage(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 3 3 3 3 3 . . . . . . 
+        . . . . . 3 3 3 3 3 . . . . . . 
+        . . . . . 3 3 3 3 3 . . . . . . 
+        . . . . . 3 3 3 3 3 . . . . . . 
+        . . . . . 3 3 3 3 3 . . . . . . 
+        `)
+})
+let inimigo: Sprite = null
 let prota: Sprite = null
 let level = 0
 scene.setBackgroundImage(img`
@@ -164,8 +209,31 @@ prota = sprites.create(img`
     . . . . . 3 3 3 3 3 3 . . . . . 
     . . . . . 3 3 3 3 3 3 . . . . . 
     `, SpriteKind.Player)
-prota.setPosition(10, 95)
+prota.setPosition(15, 95)
 scene.cameraFollowSprite(prota)
 controller.moveSprite(prota, 100, 0)
 prota.ay = 300
 info.startCountdown(60)
+game.onUpdateInterval(500, function () {
+    inimigo = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        `, SpriteKind.Enemy)
+    inimigo.x = scene.cameraProperty(CameraProperty.Right)
+    inimigo.y = 105
+    inimigo.setVelocity(-40, 0)
+})
