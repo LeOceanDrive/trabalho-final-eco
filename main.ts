@@ -1,15 +1,20 @@
 namespace SpriteKind {
     export const Enemy_Projectile = SpriteKind.create()
+    export const Shooting_enemy = SpriteKind.create()
 }
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (prota.isHittingTile(CollisionDirection.Bottom)) {
         prota.vy = -150
     }
 })
+scene.onHitWall(SpriteKind.Enemy_Projectile, function (sprite, location) {
+    sprites.destroy(bala_inimiga)
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
     scene.cameraShake(4, 500)
     tiles.setCurrentTilemap(tilemap`level2`)
-    prota.setPosition(10, 95)
+    sprites.destroy(inimigo)
+    prota.setPosition(15, 95)
     game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
     info.startCountdown(60)
     level = 1
@@ -31,8 +36,21 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, lo
             . . . . . e e e e e e . . . . . 
             . . . . . e e e e e e . . . . . 
             . . . . . e e e e e e . . . . . 
-            `, SpriteKind.Enemy)
+            `, SpriteKind.Shooting_enemy)
         tiles.placeOnTile(inimigo_atira, value)
+    }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite, otherSprite) {
+    if (prota.vy > 0) {
+        sprites.destroy(inimigo_atira)
+        info.changeScoreBy(1)
+        prota.vy = -100
+    } else {
+        prota.vy = -100
+        info.changeLifeBy(-1)
+        controller.moveSprite(prota, 0, 0)
+        pause(300)
+        controller.moveSprite(prota, 100, 0)
     }
 })
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
@@ -95,9 +113,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         controller.moveSprite(prota, 100, 0)
     }
 })
-let bala_inimiga: Sprite = null
-let inimigo: Sprite = null
 let inimigo_atira: Sprite = null
+let inimigo: Sprite = null
+let bala_inimiga: Sprite = null
 let prota: Sprite = null
 let level = 0
 scene.setBackgroundImage(img`
@@ -277,7 +295,7 @@ game.onUpdateInterval(5000, function () {
     inimigo.setVelocity(-40, 0)
 })
 game.onUpdateInterval(2000, function () {
-    for (let inimigo_atira of sprites.allOfKind(SpriteKind.Enemy)) {
+    for (let inimigo_atira of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
         if (prota.x > inimigo_atira.x) {
             bala_inimiga = sprites.create(img`
                 . . . . . . . . . . . . . . . . 
@@ -297,7 +315,8 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 `, SpriteKind.Enemy_Projectile)
-            bala_inimiga.x = -100
+            bala_inimiga.vx = 100
+            bala_inimiga.setPosition(inimigo_atira.x, inimigo_atira.y)
         } else {
             bala_inimiga = sprites.create(img`
                 . . . . . . . . . . . . . . . . 
@@ -317,7 +336,8 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 `, SpriteKind.Enemy_Projectile)
-            bala_inimiga.x = 100
+            bala_inimiga.vx = -100
+            bala_inimiga.setPosition(inimigo_atira.x, inimigo_atira.y)
         }
     }
 })
