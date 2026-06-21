@@ -1,3 +1,6 @@
+namespace SpriteKind {
+    export const Enemy_Projectile = SpriteKind.create()
+}
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (prota.isHittingTile(CollisionDirection.Bottom)) {
         prota.vy = -150
@@ -10,6 +13,27 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, lo
     game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
     info.startCountdown(60)
     level = 1
+    for (let value of tiles.getTilesByType(assets.tile`myTile0`)) {
+        inimigo_atira = sprites.create(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            `, SpriteKind.Enemy)
+        tiles.placeOnTile(inimigo_atira, value)
+    }
 })
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     prota.setImage(img`
@@ -71,7 +95,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         controller.moveSprite(prota, 100, 0)
     }
 })
+let bala_inimiga: Sprite = null
 let inimigo: Sprite = null
+let inimigo_atira: Sprite = null
 let prota: Sprite = null
 let level = 0
 scene.setBackgroundImage(img`
@@ -249,4 +275,49 @@ game.onUpdateInterval(5000, function () {
     inimigo.x = scene.cameraProperty(CameraProperty.Right)
     inimigo.y = 105
     inimigo.setVelocity(-40, 0)
+})
+game.onUpdateInterval(2000, function () {
+    for (let inimigo_atira of sprites.allOfKind(SpriteKind.Enemy)) {
+        if (prota.x > inimigo_atira.x) {
+            bala_inimiga = sprites.create(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . f . . . . . . . . 
+                . . . . . . f f f . . . . . . . 
+                . . . . . . f f f . . . . . . . 
+                . . . . . . . f . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, SpriteKind.Enemy_Projectile)
+            bala_inimiga.x = -100
+        } else {
+            bala_inimiga = sprites.create(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . f . . . . . . . . 
+                . . . . . . f f f . . . . . . . 
+                . . . . . . f f f . . . . . . . 
+                . . . . . . . f . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, SpriteKind.Enemy_Projectile)
+            bala_inimiga.x = 100
+        }
+    }
 })
