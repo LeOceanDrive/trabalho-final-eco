@@ -64,8 +64,11 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         info.changeScoreBy(1)
         prota.vy = -100
     } else {
+        prota.vy = -100
         info.changeLifeBy(-1)
-        prota.vy = -50
+        controller.moveSprite(prota, 0, 0)
+        pause(300)
+        controller.moveSprite(prota, 100, 0)
     }
 })
 let inimigo: Sprite = null
