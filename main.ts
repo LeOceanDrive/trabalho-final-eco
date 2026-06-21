@@ -12,33 +12,14 @@ scene.onHitWall(SpriteKind.Enemy_Projectile, function (sprite, location) {
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
     scene.cameraShake(4, 500)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy_Projectile)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Shooting_enemy)
     tiles.setCurrentTilemap(tilemap`level2`)
-    sprites.destroy(inimigo)
     prota.setPosition(15, 95)
     game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
     info.startCountdown(60)
     level = 1
-    for (let value of tiles.getTilesByType(assets.tile`myTile0`)) {
-        inimigo_atira = sprites.create(img`
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            `, SpriteKind.Shooting_enemy)
-        tiles.placeOnTile(inimigo_atira, value)
-    }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite, otherSprite) {
     if (prota.vy > 0) {
@@ -53,48 +34,53 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite
         controller.moveSprite(prota, 100, 0)
     }
 })
+sprites.onOverlap(SpriteKind.Shooting_enemy, SpriteKind.Projectile, function (sprite, otherSprite) {
+    sprites.destroy(inimigo_atira)
+    sprites.destroy(bala)
+    info.changeScoreBy(1)
+})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (controller.down.isPressed()) {
+        bala = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . f f f . . . . . . . 
+            . . . . . f 5 5 5 f . . . . . . 
+            . . . . . . f f f . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, prota, last_vx, 0)
+        bala.y = bala.y + 8
+    } else {
+        bala = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . f f f . . . . . . . 
+            . . . . . f 5 5 5 f . . . . . . 
+            . . . . . . f f f . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, prota, last_vx, 0)
+    }
     pause(100)
-    if (controller.left.isPressed()) {
-        bala = sprites.createProjectileFromSprite(img`
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . f f f . . . . . . . 
-            . . . . . f 5 5 5 f . . . . . . 
-            . . . . . . f f f . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            `, prota, -150, 0)
-    }
-    if (controller.right.isPressed()) {
-        bala = sprites.createProjectileFromSprite(img`
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . f f f . . . . . . . 
-            . . . . . f 5 5 5 f . . . . . . 
-            . . . . . . f f f . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            `, prota, 150, 0)
-    }
 })
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     prota.setImage(img`
@@ -115,6 +101,11 @@ controller.down.onEvent(ControllerButtonEvent.Released, function () {
         . . . . . 3 3 3 3 3 3 . . . . . 
         . . . . . 3 3 3 3 3 3 . . . . . 
         `)
+})
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite, otherSprite) {
+    sprites.destroy(inimigo)
+    sprites.destroy(bala)
+    info.changeScoreBy(1)
 })
 info.onCountdownEnd(function () {
     game.gameOver(false)
@@ -146,6 +137,7 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (sprite, otherSprite) {
     sprites.destroy(bala_inimiga)
     info.changeLifeBy(-1)
+    pause(200)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     if (prota.vy > 0) {
@@ -160,10 +152,11 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         controller.moveSprite(prota, 100, 0)
     }
 })
+let inimigo: Sprite = null
 let bala: Sprite = null
 let inimigo_atira: Sprite = null
-let inimigo: Sprite = null
 let bala_inimiga: Sprite = null
+let last_vx = 0
 let prota: Sprite = null
 let level = 0
 scene.setBackgroundImage(img`
@@ -318,7 +311,18 @@ prota.setPosition(15, 95)
 scene.cameraFollowSprite(prota)
 controller.moveSprite(prota, 100, 0)
 prota.ay = 300
+last_vx = 100
 info.startCountdown(60)
+game.onUpdate(function () {
+    if (prota.vx != 0) {
+        if (prota.vx > 0) {
+            last_vx = prota.vx + 50
+        }
+        if (prota.vx < 0) {
+            last_vx = prota.vx + -50
+        }
+    }
+})
 game.onUpdateInterval(5000, function () {
     inimigo = sprites.create(img`
         . . . . . . . . . . . . . . . . 
@@ -341,6 +345,29 @@ game.onUpdateInterval(5000, function () {
     inimigo.x = scene.cameraProperty(CameraProperty.Right)
     inimigo.y = 105
     inimigo.setVelocity(-40, 0)
+})
+game.onUpdateInterval(2000, function () {
+    for (let value of tiles.getTilesByType(assets.tile`myTile0`)) {
+        inimigo_atira = sprites.create(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            . . . . . e e e e e e . . . . . 
+            `, SpriteKind.Shooting_enemy)
+        tiles.placeOnTile(inimigo_atira, value)
+    }
 })
 game.onUpdateInterval(2000, function () {
     for (let inimigo_atira of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
