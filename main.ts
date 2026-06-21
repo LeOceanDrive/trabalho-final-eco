@@ -58,6 +58,16 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . . 3 3 3 3 3 . . . . . . 
         `)
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    if (prota.vy > 0) {
+        sprites.destroy(inimigo)
+        info.changeScoreBy(1)
+        prota.vy = -100
+    } else {
+        info.changeLifeBy(-1)
+        prota.vy = -50
+    }
+})
 let inimigo: Sprite = null
 let prota: Sprite = null
 let level = 0
@@ -214,7 +224,7 @@ scene.cameraFollowSprite(prota)
 controller.moveSprite(prota, 100, 0)
 prota.ay = 300
 info.startCountdown(60)
-game.onUpdateInterval(500, function () {
+game.onUpdateInterval(5000, function () {
     inimigo = sprites.create(img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
