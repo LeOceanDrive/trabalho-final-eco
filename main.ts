@@ -53,6 +53,49 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite
         controller.moveSprite(prota, 100, 0)
     }
 })
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    pause(100)
+    if (controller.left.isPressed()) {
+        bala = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . f f f . . . . . . . 
+            . . . . . f 5 5 5 f . . . . . . 
+            . . . . . . f f f . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, prota, -150, 0)
+    }
+    if (controller.right.isPressed()) {
+        bala = sprites.createProjectileFromSprite(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . f f f . . . . . . . 
+            . . . . . f 5 5 5 f . . . . . . 
+            . . . . . . f f f . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, prota, 150, 0)
+    }
+})
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     prota.setImage(img`
         . . . . . . . . . . . . . . . . 
@@ -100,6 +143,10 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . . 3 3 3 3 3 . . . . . . 
         `)
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (sprite, otherSprite) {
+    sprites.destroy(bala_inimiga)
+    info.changeLifeBy(-1)
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     if (prota.vy > 0) {
         sprites.destroy(inimigo)
@@ -113,6 +160,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         controller.moveSprite(prota, 100, 0)
     }
 })
+let bala: Sprite = null
 let inimigo_atira: Sprite = null
 let inimigo: Sprite = null
 let bala_inimiga: Sprite = null
@@ -246,7 +294,7 @@ game.showLongText("Use as setas para se mover", DialogLayout.Bottom)
 game.showLongText("Mate os inimigos para ganhar pontos", DialogLayout.Bottom)
 game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
 info.setScore(0)
-info.setLife(3)
+info.setLife(5)
 level = 0
 prota = sprites.create(img`
     . . . . . . . . . . . . . . . . 
@@ -304,10 +352,10 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                . . . . . . . f . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
                 . . . . . . f f f . . . . . . . 
-                . . . . . . f f f . . . . . . . 
-                . . . . . . . f . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
@@ -325,10 +373,10 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                . . . . . . . f . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
                 . . . . . . f f f . . . . . . . 
-                . . . . . . f f f . . . . . . . 
-                . . . . . . . f . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
                 . . . . . . . . . . . . . . . . 
