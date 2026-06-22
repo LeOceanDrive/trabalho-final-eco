@@ -3,9 +3,6 @@ namespace SpriteKind {
     export const Shooting_enemy = SpriteKind.create()
     export const perigos = SpriteKind.create()
 }
-scene.onHitTile(SpriteKind.Enemy, 11, function (sprite) {
-	
-})
 scene.onOverlapTile(SpriteKind.Player, sprites.jewels.jewel2, function (sprite8, location4) {
     info.setLife(0)
 })
@@ -32,9 +29,6 @@ scene.onHitWall(SpriteKind.Enemy, function (sprite7, location3) {
     inim1.setVelocity(-40, 0)
     inim2.setVelocity(-40, 0)
     inimigo.setVelocity(-40, 0)
-})
-scene.onHitWall(SpriteKind.Enemy, function (sprite2, location) {
-	
 })
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (controller.down.isPressed()) {
@@ -80,9 +74,10 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     pause(100)
 })
 sprites.onOverlap(SpriteKind.Shooting_enemy, SpriteKind.Projectile, function (sprite5, otherSprite2) {
-    sprites.destroy(inimAti2)
-    sprites.destroy(bala)
+    sprites.destroy(otherSprite2)
+    sprites.destroy(sprite5)
     info.changeScoreBy(1)
+    sprites.destroy(inimAti2)
 })
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     prota.setImage(img`
@@ -114,19 +109,6 @@ info.onCountdownEnd(function () {
     game.setGameOverScoringType(game.ScoringType.HighScore)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite4, otherSprite) {
-    if (prota.vy > 0) {
-        sprites.destroy(prota)
-        info.changeScoreBy(1)
-        prota.vy = -100
-    } else {
-        prota.vy = -100
-        info.changeLifeBy(-1)
-        controller.moveSprite(prota, 0, 0)
-        pause(300)
-        controller.moveSprite(prota, 100, 0)
-    }
-})
-controller.A.onEvent(ControllerButtonEvent.Released, function () {
 	
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava1, function (sprite8, location4) {
@@ -168,19 +150,22 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite11, other
         info.changeScoreBy(1)
         prota.vy = -100
     } else {
+        sprites.destroy(otherSprite5)
         prota.vy = -100
         info.changeLifeBy(-1)
-        controller.moveSprite(prota, 0, 0)
-        pause(300)
-        controller.moveSprite(prota, 100, 0)
     }
+    pause(1000)
 })
 scene.onHitWall(SpriteKind.Enemy_Projectile, function (sprite3, location2) {
     sprites.destroy(bala_inimiga)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (sprite9, otherSprite4) {
-    sprites.destroy(bala_inimiga)
+    sprites.destroy(otherSprite4)
+    info.changeLifeBy(-1)
+    pause(1000)
 })
+let lastY = 0
+let lastLastY = 0
 let bala_inimiga: Sprite = null
 let bala: Sprite = null
 let last_vx = 0
@@ -461,23 +446,14 @@ controller.moveSprite(prota, 100, 0)
 prota.ay = 300
 last_vx = 100
 info.startCountdown(60)
-game.onUpdate(function () {
-    if (prota.vx != 0) {
-        if (prota.vx > 0) {
-            last_vx = prota.vx + 50
-        }
-        if (prota.vx < 0) {
-            last_vx = prota.vx + -50
-        }
-    }
-})
 game.onUpdateInterval(5000, function () {
     inim1.setVelocity(40, 0)
     inim2.setVelocity(40, 0)
     inimigo.setVelocity(40, 0)
 })
-game.onUpdateInterval(2000, function () {
-	
+game.onUpdateInterval(50, function () {
+    lastLastY = lastY
+    lastY = prota.x
 })
 game.onUpdateInterval(2000, function () {
     for (let inimigo_atira2 of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
@@ -526,6 +502,13 @@ game.onUpdateInterval(2000, function () {
         }
     }
 })
-forever(function () {
-	
+game.onUpdateInterval(100, function () {
+    if (prota.vx != 0) {
+        if (prota.vx > 0) {
+            last_vx = prota.vx + 50
+        }
+        if (prota.vx < 0) {
+            last_vx = prota.vx + -50
+        }
+    }
 })
