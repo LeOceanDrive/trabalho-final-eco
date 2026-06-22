@@ -1,10 +1,11 @@
 namespace SpriteKind {
     export const Enemy_Projectile = SpriteKind.create()
     export const Shooting_enemy = SpriteKind.create()
+    export const perigos = SpriteKind.create()
 }
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (prota.isHittingTile(CollisionDirection.Bottom)) {
-        prota.vy = -150
+        prota.vy = -175
     }
 })
 scene.onHitWall(SpriteKind.Enemy_Projectile, function (sprite, location) {
@@ -114,6 +115,9 @@ info.onCountdownEnd(function () {
 scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
     inimigo.setVelocity(40, 0)
 })
+controller.A.onEvent(ControllerButtonEvent.Released, function () {
+	
+})
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     prota.setImage(img`
         . . . . . . . . . . . . . . . . 
@@ -134,6 +138,9 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . . 3 3 3 3 3 . . . . . . 
         `)
 })
+scene.onOverlapTile(SpriteKind.Player, sprites.jewels.jewel2, function (sprite, location) {
+    info.setLife(0)
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (sprite, otherSprite) {
     sprites.destroy(bala_inimiga)
     info.changeLifeBy(-1)
@@ -152,13 +159,13 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         controller.moveSprite(prota, 100, 0)
     }
 })
-let inimigo: Sprite = null
 let bala: Sprite = null
 let inimigo_atira: Sprite = null
 let bala_inimiga: Sprite = null
 let last_vx = 0
 let prota: Sprite = null
 let level = 0
+let inimigo: Sprite = null
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -282,7 +289,28 @@ scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     `)
 effects.clouds.startScreenEffect()
-tiles.setCurrentTilemap(tilemap`level1`)
+tiles.setCurrentTilemap(tilemap`level4`)
+inimigo = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . 1 . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . f f f f f . . . . . 
+    . . . . . . f f f f f . . . . . 
+    . . . . . . f f f f f . . . . . 
+    . . . . . . f f f f f . . . . . 
+    . . . . . . f f f f f . . . . . 
+    . . . . . . f f f f f . . . . . 
+    . . . . . . f f f f f . . . . . 
+    . . . . . . f f f f f . . . . . 
+    . . . . . . f f f f f . . . . . 
+    `, SpriteKind.Enemy)
+inimigo.x = 100
+inimigo.y = 120
+inimigo.setVelocity(-40, 0)
 game.showLongText("Use as setas para se mover", DialogLayout.Bottom)
 game.showLongText("Mate os inimigos para ganhar pontos", DialogLayout.Bottom)
 game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
@@ -307,7 +335,7 @@ prota = sprites.create(img`
     . . . . . 3 3 3 3 3 3 . . . . . 
     . . . . . 3 3 3 3 3 3 . . . . . 
     `, SpriteKind.Player)
-prota.setPosition(15, 95)
+prota.setPosition(15, 11)
 scene.cameraFollowSprite(prota)
 controller.moveSprite(prota, 100, 0)
 prota.ay = 300
@@ -324,27 +352,7 @@ game.onUpdate(function () {
     }
 })
 game.onUpdateInterval(5000, function () {
-    inimigo = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . f f f f f . . . . . 
-        . . . . . . f f f f f . . . . . 
-        . . . . . . f f f f f . . . . . 
-        . . . . . . f f f f f . . . . . 
-        . . . . . . f f f f f . . . . . 
-        . . . . . . f f f f f . . . . . 
-        . . . . . . f f f f f . . . . . 
-        . . . . . . f f f f f . . . . . 
-        . . . . . . f f f f f . . . . . 
-        `, SpriteKind.Enemy)
-    inimigo.x = scene.cameraProperty(CameraProperty.Right)
-    inimigo.y = 105
-    inimigo.setVelocity(-40, 0)
+	
 })
 game.onUpdateInterval(2000, function () {
     for (let value of tiles.getTilesByType(assets.tile`myTile0`)) {
