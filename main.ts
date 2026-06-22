@@ -11,17 +11,6 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
 scene.onHitWall(SpriteKind.Enemy_Projectile, function (sprite, location) {
     sprites.destroy(bala_inimiga)
 })
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
-    scene.cameraShake(4, 500)
-    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
-    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy_Projectile)
-    sprites.destroyAllSpritesOfKind(SpriteKind.Shooting_enemy)
-    tiles.setCurrentTilemap(tilemap`level2`)
-    prota.setPosition(15, 95)
-    game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
-    info.startCountdown(60)
-    level = 1
-})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite, otherSprite) {
     if (prota.vy > 0) {
         sprites.destroy(inimigo_atira)
@@ -145,6 +134,17 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (spri
     sprites.destroy(bala_inimiga)
     info.changeLifeBy(-1)
     pause(200)
+})
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleInsignia, function (sprite, location) {
+    scene.cameraShake(4, 500)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Enemy_Projectile)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Shooting_enemy)
+    tiles.setCurrentTilemap(tilemap`level2`)
+    prota.setPosition(15, 95)
+    game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
+    info.startCountdown(60)
+    level = 1
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     if (prota.vy > 0) {
@@ -308,8 +308,7 @@ inimigo = sprites.create(img`
     . . . . . . f f f f f . . . . . 
     . . . . . . f f f f f . . . . . 
     `, SpriteKind.Enemy)
-inimigo.x = 100
-inimigo.y = 120
+inimigo.setPosition(100, 120)
 inimigo.setVelocity(-40, 0)
 game.showLongText("Use as setas para se mover", DialogLayout.Bottom)
 game.showLongText("Mate os inimigos para ganhar pontos", DialogLayout.Bottom)
@@ -355,27 +354,7 @@ game.onUpdateInterval(5000, function () {
 	
 })
 game.onUpdateInterval(2000, function () {
-    for (let value of tiles.getTilesByType(assets.tile`myTile0`)) {
-        inimigo_atira = sprites.create(img`
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            . . . . . e e e e e e . . . . . 
-            `, SpriteKind.Shooting_enemy)
-        tiles.placeOnTile(inimigo_atira, value)
-    }
+	
 })
 game.onUpdateInterval(2000, function () {
     for (let inimigo_atira of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
