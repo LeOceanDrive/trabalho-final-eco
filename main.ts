@@ -2,6 +2,37 @@ namespace SpriteKind {
     export const Enemy_Projectile = SpriteKind.create()
     export const Shooting_enemy = SpriteKind.create()
     export const perigos = SpriteKind.create()
+    export const flyingEnemy = SpriteKind.create()
+    export const boss = SpriteKind.create()
+    export const wave = SpriteKind.create()
+}
+/**
+ * USE ESSAS FUNÇÕES
+ */
+/**
+ * Onda
+ */
+function spawnBoss (x: number, y: number) {
+    bossta = sprites.create(img`
+        . . . . . . f f f f f . . . . . 
+        . . . . f f f 3 1 1 f f . . . . 
+        . . . f f 3 3 3 3 3 1 f f . . . 
+        . . f f 3 f 3 3 3 3 3 3 f . . . 
+        . . f 3 3 3 3 f 3 3 f 3 f f . . 
+        . f f 3 3 3 f f 3 3 3 3 3 f . . 
+        f f 3 f 3 f f 3 3 3 3 3 3 f . . 
+        . f 3 f 3 3 3 3 3 3 3 3 3 f f f 
+        . f 3 f f 3 3 3 3 3 f f 3 f . . 
+        . f 3 3 f f f f f f f f 3 f . . 
+        . f 3 3 3 3 f f f 3 3 3 3 f . . 
+        . . f f 3 3 3 3 3 3 3 3 f f . . 
+        . . . f f f f f f f f f f . . . 
+        . . . f . . . . . . . . f . . . 
+        . . . f . . . . . . . . f . . . 
+        . f f f . . . . . . f f f . . . 
+        `, SpriteKind.boss)
+    bosstaHP = 100
+    tiles.placeOnTile(bossta, tiles.getTileLocation(x, y))
 }
 scene.onOverlapTile(SpriteKind.Player, sprites.jewels.jewel2, function (sprite8, location4) {
     info.setLife(0)
@@ -19,6 +50,9 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleInsignia, func
     info.startCountdown(60)
     scene.cameraShake(4, 500)
     prota.setPosition(15, 95)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.boss, function (sprite, otherSprite) {
+    dealDamage()
 })
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (prota.isHittingTile(CollisionDirection.Bottom)) {
@@ -71,6 +105,12 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
         parryUsable = 1
     }
 })
+function getDistance (sprite1: Sprite, sprite2: Sprite) {
+    return Math.sqrt(Math.abs(sprite1.x - sprite2.x) ** 2 + Math.abs(sprite1.y - sprite2.y) ** 2)
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.wave, function (sprite, otherSprite) {
+    dealDamage()
+})
 scene.onHitWall(SpriteKind.Enemy, function (sprite7, location3) {
     sprite7.setVelocity(-1 * sprite7.vx, 0)
 })
@@ -93,7 +133,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
-            `, prota, 100, 0)
+            `, prota, last_vx, 0)
         bala.y = prota.x + 20
     } else {
         bala = sprites.createProjectileFromSprite(img`
@@ -113,7 +153,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
-            `, prota, 100, 0)
+            `, prota, last_vx, 0)
     }
     pause(100)
 })
@@ -144,7 +184,6 @@ controller.down.onEvent(ControllerButtonEvent.Released, function () {
         `)
 })
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite6, otherSprite3) {
-    sprites.destroy(inimigo)
     sprites.destroy(otherSprite3)
     info.changeScoreBy(1)
 })
@@ -164,6 +203,15 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite
         dealDamage()
         sprites.destroy(otherSprite)
     }
+})
+sprites.onCreated(SpriteKind.flyingEnemy, function (sprite) {
+    if (getDistance(prota, sprite) < 10) {
+        sprite.follow(prota)
+    }
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.flyingEnemy, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
+    sprites.destroy(otherSprite)
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava1, function (sprite8, location4) {
     info.setLife(0)
@@ -191,6 +239,7 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 function dealDamage () {
     if (damagable == 1) {
         if (parryState == 0) {
+            music.play(music.melodyPlayable(music.thump), music.PlaybackMode.UntilDone)
             info.changeLifeBy(-1)
             damagable = 0
             pause(500)
@@ -199,6 +248,27 @@ function dealDamage () {
             music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.UntilDone)
         }
     }
+}
+function spawnFlying3 (x: number, y: number) {
+    flying3 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . 1 1 1 . . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . . . 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.flyingEnemy)
+    tiles.placeOnTile(flying3, tiles.getTileLocation(x, y))
 }
 scene.onOverlapTile(SpriteKind.Player, sprites.builtin.field1, function (sprite10, location5) {
     tiles.setCurrentTilemap(tilemap`level6`)
@@ -210,6 +280,38 @@ scene.onOverlapTile(SpriteKind.Player, sprites.builtin.field1, function (sprite1
     scene.cameraShake(4, 500)
     prota.setPosition(15, 95)
 })
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.boss, function (sprite, otherSprite) {
+    if (bossDamagable == 1) {
+        info.changeScoreBy(1)
+        bosstaHP += -1
+    }
+    sprites.destroy(sprite)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.flyingEnemy, function (sprite, otherSprite) {
+    dealDamage()
+    sprites.destroy(otherSprite)
+})
+function spawnFlying2 (x: number, y: number) {
+    flying2 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . 1 1 1 . . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . . . 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.flyingEnemy)
+    tiles.placeOnTile(flying2, tiles.getTileLocation(x, y))
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite11, otherSprite5) {
     if (prota.vy > 0) {
         info.changeScoreBy(1)
@@ -223,6 +325,27 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite11, other
         dealDamage()
     }
 })
+function spawnFlying (x: number, y: number) {
+    flying = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . 1 1 1 . . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . . . 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 1 1 1 1 . . . . . . 
+        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.flyingEnemy)
+    tiles.placeOnTile(flying, tiles.getTileLocation(x, y))
+}
 scene.onHitWall(SpriteKind.Enemy_Projectile, function (sprite3, location2) {
     sprites.destroy(bala_inimiga)
 })
@@ -230,11 +353,117 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (spri
     sprites.destroy(otherSprite4)
     dealDamage()
 })
+/**
+ * Boss Behavior
+ */
+/**
+ * Dash
+ */
+/**
+ * Pulo
+ */
+/**
+ * Fraco
+ */
+sprites.onCreated(SpriteKind.boss, function (sprite) {
+    sprite.setBounceOnWall(true)
+    sprite.setScale(3, ScaleAnchor.Middle)
+    while (bosstaHP > 0) {
+        for (let index = 0; index < 2; index++) {
+            sprite.setVelocity(50, 0)
+            pause(2000)
+            sprite.setVelocity(-50, 0)
+            pause(5000)
+            sprite.setVelocity(50, 50)
+            pause(1000)
+            sprite.setVelocity(0, 50)
+            pause(1000)
+            sprite.setVelocity(-50, 50)
+            pause(1000)
+            sprite.setVelocity(0, 50)
+        }
+        pause(5000)
+        sprite.setImage(img`
+            . . . . . . f f f f f . . . . . 
+            . . . . f f f 6 1 1 f f . . . . 
+            . . . f f 6 6 6 6 6 1 f f . . . 
+            . . f f 6 f 6 6 6 6 6 6 f . . . 
+            . . f 6 6 6 6 f 6 6 f 6 f f . . 
+            . f f 6 6 6 f f 6 6 6 6 6 f . . 
+            f f 6 6 6 f f 6 6 6 6 6 6 f . . 
+            . f 6 6 6 6 6 6 6 6 6 6 6 f f f 
+            . f 6 f f f f f f f f 6 6 f . . 
+            . f 8 6 6 6 6 6 6 6 f f 6 f . . 
+            . f 8 8 6 6 6 6 6 6 6 f 6 f . . 
+            . . f f 8 8 8 8 6 6 6 6 f f . . 
+            . . . f f f f f f f f f f . . . 
+            . . . f . . . . . . . . f . . . 
+            . . . f . . . . . . . . f . . . 
+            . f f f . . . . . . f f f . . . 
+            `)
+        bossDamagable = 1
+        pause(5000)
+        bossDamagable = 0
+        sprite.setImage(img`
+            . . . . . . f f f f f . . . . . 
+            . . . . f f f 3 1 1 f f . . . . 
+            . . . f f 3 3 3 3 3 1 f f . . . 
+            . . f f 3 f 3 3 3 3 3 3 f . . . 
+            . . f 3 3 3 3 f 3 3 f 3 f f . . 
+            . f f 3 3 3 f f 3 3 3 3 3 f . . 
+            f f 3 f 3 f f 3 3 3 3 3 3 f . . 
+            . f 3 f 3 3 3 3 3 3 3 3 3 f f f 
+            . f 3 f f 3 3 3 3 3 f f 3 f . . 
+            . f 3 3 f f f f f f f f 3 f . . 
+            . f 3 3 3 3 f f f 3 3 3 3 f . . 
+            . . f f 3 3 3 3 3 3 3 3 f f . . 
+            . . . f f f f f f f f f f . . . 
+            . . . f . . . . . . . . f . . . 
+            . . . f . . . . . . . . f . . . 
+            . f f f . . . . . . f f f . . . 
+            `)
+        pause(1000)
+        waveprojectile = sprites.create(img`
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            . . . . . . . 8 8 . . . . . . . 
+            `, SpriteKind.wave)
+        waveprojectile.setPosition(sprite.x, sprite.y)
+        waveprojectile.setScale(4, ScaleAnchor.Middle)
+        if (prota.x < sprite.x) {
+            waveprojectile.setVelocity(-50, 0)
+        } else {
+            waveprojectile.setVelocity(50, 0)
+        }
+    }
+    sprites.destroy(sprite, effects.spray, 5000)
+})
 let lastY = 0
 let lastLastY = 0
+let waveprojectile: Sprite = null
 let bala_inimiga: Sprite = null
+let flying: Sprite = null
+let flying2: Sprite = null
+let flying3: Sprite = null
 let bala: Sprite = null
 let parryState = 0
+let bosstaHP = 0
+let bossta: Sprite = null
+let bossDamagable = 0
+let last_vx = 0
 let prota: Sprite = null
 let level = 0
 let inimigo_atira: Sprite = null
@@ -405,40 +634,6 @@ let inim1 = sprites.create(img`
     . . . . . . f f f f f . . . . . 
     . . . . . . f f f f f . . . . . 
     `, SpriteKind.Enemy)
-let flying = sprites.create(img`
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    .......ff.......................
-    ........f..f....................
-    .......ffff.f...................
-    ..........f.....................
-    ..........f.....................
-    ..........f.........f...........
-    ..........f.........f...........
-    ..........f..f.f...ff.f.f.......
-    ..........f...f...f.f..f........
-    .........f...f.f...ff.f.f.......
-    .........f......................
-    .........f......................
-    .........f......................
-    .........f......................
-    ....f....f......................
-    ...f.f.f.f......................
-    ....f...f.......................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    `, SpriteKind.Enemy)
 tiles.placeOnTile(inim1, tiles.getTileLocation(14, 6))
 inim1.setVelocity(40, 0)
 let inim2 = sprites.create(img`
@@ -546,8 +741,9 @@ prota.setPosition(15, 11)
 scene.cameraFollowSprite(prota)
 controller.moveSprite(prota, 100, 0)
 prota.ay = 300
-let last_vx = 100
+last_vx = 100
 info.startCountdown(60)
+bossDamagable = 0
 game.onUpdateInterval(5000, function () {
     inim1.setVelocity(40, 0)
     inim2.setVelocity(40, 0)
@@ -606,11 +802,6 @@ game.onUpdateInterval(2000, function () {
 })
 game.onUpdateInterval(100, function () {
     if (prota.vx != 0) {
-        if (prota.vx > 0) {
-            last_vx = prota.vx + 50
-        }
-        if (prota.vx < 0) {
-            last_vx = prota.vx + -50
-        }
+        last_vx = prota.vx * 1.5
     }
 })
