@@ -14,6 +14,12 @@ namespace SpriteKind {
 /**
  * USE ESSAS FUNÇÕES
  */
+/**
+ * Dash
+ */
+/**
+ * Pulo
+ */
 // Onda
 function spawnBoss (x: number, y: number) {
     bossta = sprites.create(img`
@@ -194,24 +200,12 @@ sprites.onOverlap(SpriteKind.Aura, SpriteKind.flyingEnemy, function (sprite, oth
     }
 })
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
-    prota.setImage(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        . . . . . 3 3 3 3 3 3 . . . . . 
-        `)
+    animation.runImageAnimation(
+    prota,
+    assets.animation`idle`,
+    500,
+    true
+    )
 })
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite6, otherSprite3) {
     sprites.destroy(sprite6)
@@ -237,6 +231,56 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile12`, function (sprite, 
     tiles.setWallAt(tiles.getTileLocation(217, 21), true)
     tiles.setWallAt(tiles.getTileLocation(217, 20), true)
 })
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    prota,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . f f f f . . . . . 
+        . . . . . . f 7 7 7 7 f . . . . 
+        . . . . . f f 7 7 7 7 f f . . . 
+        . . . . . f f f f f f 7 f . . . 
+        . . . . . . f 8 4 8 f f f . . . 
+        . . . . . . f 4 4 4 4 f . . . . 
+        . . . a a c c c c c b f . . . . 
+        . . . a a c c c c c b f . . . . 
+        . . . . 4 a a a a c c b a . . . 
+        . . . . . . f 7 a 4 c a a . . . 
+        . . . . . . f 7 7 7 7 f . . . . 
+        . . . . . . f 7 f f 7 f . . . . 
+        . . . . . . e e . e e . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . f f f f . . . . . 
+        . . . . . . f 7 7 7 7 f . . . . 
+        . . . . . f f 7 7 7 7 f f . . . 
+        . . . . . f f f f f f 7 f . . . 
+        . . . . . . f 8 4 8 f f f . . . 
+        . . . . . . f 4 4 4 4 f . . . . 
+        . . . a a c c c c c b f . . . . 
+        . . . a a c c c c c b f . . . . 
+        . . . . 4 a a a a c c b a . . . 
+        . . . . . . f 7 a 4 c a a . . . 
+        . . . . . . f 7 f f 7 f . . . . 
+        . . . . . . e e . e e . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `],
+    500,
+    true
+    )
+})
+controller.right.onEvent(ControllerButtonEvent.Released, function () {
+    animation.runImageAnimation(
+    prota,
+    assets.animation`idle`,
+    500,
+    true
+    )
+})
 info.onCountdownEnd(function () {
     game.gameOver(false)
     game.setGameOverScoringType(game.ScoringType.HighScore)
@@ -253,6 +297,48 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite
         dealDamage()
         sprites.destroy(otherSprite)
     }
+})
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    animation.runImageAnimation(
+    prota,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . f f f f . . . . . . . 
+        . . . . f 7 7 7 7 f . . . . . . 
+        . . . f f 7 7 7 7 f f . . . . . 
+        . . . f 7 f f f f f f . . . . . 
+        . . . f f f 8 4 8 f . . . . . . 
+        . . . . f 4 4 4 4 f . . . . . . 
+        . . . . f b c c c c c a a . . . 
+        . . . . f b c c c c c a a . . . 
+        . . . a b c c a a a a 4 . . . . 
+        . . . a a c 4 a 7 f . . . . . . 
+        . . . . f 7 7 7 7 f . . . . . . 
+        . . . . f 7 f f 7 f . . . . . . 
+        . . . . . e e . e e . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f . . . . . . 
+        . . . . . f 7 7 7 7 f . . . . . 
+        . . . . f f 7 7 7 7 f f . . . . 
+        . . . . f 7 f f f f f f . . . . 
+        . . . . f f f 8 4 8 f . . . . . 
+        . . . . . f 4 4 4 4 f . . . . . 
+        . . . . . f b c c c c c a a . . 
+        . . . . . f b c c c c c a a . . 
+        . . . . a b c c a a a a 4 . . . 
+        . . . . a a c 4 a 7 7 e . . . . 
+        . . . . . f 7 7 f f e . . . . . 
+        . . . . . f 7 f . . . . . . . . 
+        . . . . . . e e . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `],
+    200,
+    true
+    )
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile17`, function (sprite, location) {
     game.splash("Parabéns soldado!")
@@ -304,24 +390,12 @@ sprites.onDestroyed(SpriteKind.boss, function (sprite) {
     tiles.setTileAt(tiles.getTileLocation(237, 10), assets.tile`myTile17`)
 })
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    prota.setImage(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . 3 3 3 3 3 . . . . . . 
-        . . . . . 3 3 3 3 3 . . . . . . 
-        . . . . . 3 3 3 3 3 . . . . . . 
-        . . . . . 3 3 3 3 3 . . . . . . 
-        . . . . . 3 3 3 3 3 . . . . . . 
-        `)
+    animation.runImageAnimation(
+    prota,
+    assets.animation`agachado`,
+    100,
+    false
+    )
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function (sprite, location) {
     spawnBoss(252, 10)
@@ -369,19 +443,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.flyingEnemy, function (sprite, o
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile4`, function (sprite8, location4) {
     info.setLife(0)
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite11, otherSprite5) {
-    if (prota.vy > 0) {
-        info.changeScoreBy(1)
-        prota.vy = -100
-        sprites.destroy(inimigo)
-        damagable = 0
-        pause(50)
-        damagable = 1
-    } else {
-        sprites.destroy(otherSprite5)
-        dealDamage()
-    }
-})
 function spawnFlying (x: number, y: number) {
     flying = sprites.create(img`
         . . . . . . . . . . . . . . . . 
@@ -410,12 +471,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (spri
     sprites.destroy(otherSprite4)
     dealDamage()
 })
-/**
- * Dash
- */
-/**
- * Pulo
- */
 // Fraco
 sprites.onCreated(SpriteKind.boss, function (sprite) {
     sprite.setBounceOnWall(true)
@@ -533,14 +588,14 @@ let bossDamagable = 0
 let flying: Sprite = null
 let inimigo_atira: Sprite = null
 let bala: Sprite = null
-let inimigo: Sprite = null
 let parryState = 0
 let bosstaHP = 0
 let bossta: Sprite = null
 let last_vx = 0
-let prota: Sprite = null
-let damagable = 0
 let parryUsable = 0
+let damagable = 0
+let prota: Sprite = null
+let inimigo: Sprite = null
 scene.setBackgroundImage(img`
     ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
@@ -679,7 +734,7 @@ game.showLongText("Passe pelas bandeiras para avançar", DialogLayout.Bottom)
 game.showLongText("\"Dialogue\" com o líder do planeta para vencer!", DialogLayout.Bottom)
 info.setScore(0)
 info.setLife(5)
-info.startCountdown(40)
+info.startCountdown(50)
 parryUsable = 1
 damagable = 1
 prota = sprites.create(img`
@@ -700,6 +755,12 @@ prota = sprites.create(img`
     . . . . . 3 3 3 3 3 3 . . . . . 
     . . . . . 3 3 3 3 3 3 . . . . . 
     `, SpriteKind.Player)
+animation.runImageAnimation(
+prota,
+assets.animation`idle`,
+500,
+true
+)
 tiles.placeOnTile(prota, tiles.getTileLocation(1, 25))
 scene.cameraFollowSprite(prota)
 controller.moveSprite(prota, 100, 0)
