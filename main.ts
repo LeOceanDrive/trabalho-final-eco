@@ -10,8 +10,15 @@ namespace SpriteKind {
  * USE ESSAS FUNÇÕES
  */
 /**
- * Onda
+ * Boss Behavior
  */
+/**
+ * Dash
+ */
+/**
+ * Pulo
+ */
+// Onda
 function spawnBoss (x: number, y: number) {
     bossta = sprites.create(img`
         . . . . . . f f f f f . . . . . 
@@ -34,23 +41,6 @@ function spawnBoss (x: number, y: number) {
     bosstaHP = 100
     tiles.placeOnTile(bossta, tiles.getTileLocation(x, y))
 }
-scene.onOverlapTile(SpriteKind.Player, sprites.jewels.jewel2, function (sprite8, location4) {
-    info.setLife(0)
-})
-scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleInsignia, function (sprite10, location5) {
-    sprites.destroy(inimAti2)
-    sprites.destroy(inimAti3)
-    sprites.destroy(inimigo_atira)
-    tiles.setCurrentTilemap(tilemap`level2`)
-    level = 1
-    game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
-    tiles.placeOnTile(inimigo_atira, tiles.getTileLocation(5, 11))
-    tiles.placeOnTile(inimAti2, tiles.getTileLocation(14, 8))
-    tiles.placeOnTile(inimAti3, tiles.getTileLocation(9, 5))
-    info.startCountdown(60)
-    scene.cameraShake(4, 500)
-    prota.setPosition(15, 95)
-})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.boss, function (sprite, otherSprite) {
     dealDamage()
 })
@@ -105,8 +95,52 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
         parryUsable = 1
     }
 })
+function spawnInimigo2 (x: number, y: number) {
+    inim1 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . 1 . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        `, SpriteKind.Enemy)
+    inim1.setVelocity(40, 0)
+    tiles.placeOnTile(inim1, tiles.getTileLocation(x, y))
+}
 function getDistance (sprite1: Sprite, sprite2: Sprite) {
     return Math.sqrt(Math.abs(sprite1.x - sprite2.x) ** 2 + Math.abs(sprite1.y - sprite2.y) ** 2)
+}
+function spawnInimigo1 (x: number, y: number) {
+    inimigo = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        `, SpriteKind.Enemy)
+    inimigo.setVelocity(40, 0)
+    tiles.placeOnTile(inimigo, tiles.getTileLocation(x, y))
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.wave, function (sprite, otherSprite) {
     dealDamage()
@@ -134,7 +168,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, prota, last_vx, 0)
-        bala.y = prota.x + 20
+        bala.y = prota.y + 5
     } else {
         bala = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
@@ -191,6 +225,28 @@ info.onCountdownEnd(function () {
     game.gameOver(false)
     game.setGameOverScoringType(game.ScoringType.HighScore)
 })
+function spawnInimigo5 (x: number, y: number) {
+    inim4 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        `, SpriteKind.Enemy)
+    inim4.setVelocity(40, 0)
+    tiles.placeOnTile(inim4, tiles.getTileLocation(x, y))
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite4, otherSprite) {
     if (prota.vy > 0) {
         prota.setVelocity(0, -100)
@@ -204,6 +260,28 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite
         sprites.destroy(otherSprite)
     }
 })
+function spawnInimigo4 (x: number, y: number) {
+    inim3 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . 1 . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        `, SpriteKind.Enemy)
+    inim2.setVelocity(40, 0)
+    tiles.placeOnTile(inim2, tiles.getTileLocation(x, y))
+}
 sprites.onCreated(SpriteKind.flyingEnemy, function (sprite) {
     if (getDistance(prota, sprite) < 10) {
         sprite.follow(prota)
@@ -235,6 +313,9 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . . 3 3 3 3 3 . . . . . . 
         . . . . . 3 3 3 3 3 . . . . . . 
         `)
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile11`, function (sprite8, location4) {
+    info.setLife(0)
 })
 function dealDamage () {
     if (damagable == 1) {
@@ -270,16 +351,6 @@ function spawnFlying3 (x: number, y: number) {
         `, SpriteKind.flyingEnemy)
     tiles.placeOnTile(flying3, tiles.getTileLocation(x, y))
 }
-scene.onOverlapTile(SpriteKind.Player, sprites.builtin.field1, function (sprite10, location5) {
-    tiles.setCurrentTilemap(tilemap`level6`)
-    scene.cameraShake(4, 500)
-    level = 2
-    game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
-    tiles.placeOnTile(inimAti2, tiles.getTileLocation(19, 10))
-    info.startCountdown(60)
-    scene.cameraShake(4, 500)
-    prota.setPosition(15, 95)
-})
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.boss, function (sprite, otherSprite) {
     if (bossDamagable == 1) {
         info.changeScoreBy(1)
@@ -325,6 +396,28 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite11, other
         dealDamage()
     }
 })
+function spawnInimigo6 (x: number, y: number) {
+    inim5 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . 1 . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        `, SpriteKind.Enemy)
+    inim5.setVelocity(40, 0)
+    tiles.placeOnTile(inim5, tiles.getTileLocation(x, y))
+}
 function spawnFlying (x: number, y: number) {
     flying = sprites.create(img`
         . . . . . . . . . . . . . . . . 
@@ -353,18 +446,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (spri
     sprites.destroy(otherSprite4)
     dealDamage()
 })
-/**
- * Boss Behavior
- */
-/**
- * Dash
- */
-/**
- * Pulo
- */
-/**
- * Fraco
- */
+// Fraco
 sprites.onCreated(SpriteKind.boss, function (sprite) {
     sprite.setBounceOnWall(true)
     sprite.setScale(3, ScaleAnchor.Middle)
@@ -451,27 +533,51 @@ sprites.onCreated(SpriteKind.boss, function (sprite) {
     }
     sprites.destroy(sprite, effects.spray, 5000)
 })
+function spawnInimigo3 (x: number, y: number) {
+    inim2 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . 1 . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        . . . . . . f f f f f . . . . . 
+        `, SpriteKind.Enemy)
+    inim2.setVelocity(40, 0)
+    tiles.placeOnTile(inim2, tiles.getTileLocation(x, y))
+}
 let lastY = 0
 let lastLastY = 0
 let waveprojectile: Sprite = null
 let bala_inimiga: Sprite = null
 let flying: Sprite = null
+let inim5: Sprite = null
 let flying2: Sprite = null
 let flying3: Sprite = null
+let inim2: Sprite = null
+let inim3: Sprite = null
+let inim4: Sprite = null
 let bala: Sprite = null
+let inimigo: Sprite = null
+let inim1: Sprite = null
 let parryState = 0
 let bosstaHP = 0
 let bossta: Sprite = null
 let bossDamagable = 0
 let last_vx = 0
 let prota: Sprite = null
-let level = 0
-let inimigo_atira: Sprite = null
-let inimAti3: Sprite = null
 let inimAti2: Sprite = null
 let damagable = 0
 let parryUsable = 0
-let inimigo: Sprite = null
 scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -595,67 +701,13 @@ scene.setBackgroundImage(img`
     9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     `)
 effects.clouds.startScreenEffect()
-tiles.setCurrentTilemap(tilemap`level0`)
-inimigo = sprites.create(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    `, SpriteKind.Enemy)
-inimigo.setVelocity(40, 0)
-tiles.placeOnTile(inimigo, tiles.getTileLocation(5, 7))
-let inim1 = sprites.create(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . 1 . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . 2 2 2 2 2 . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    `, SpriteKind.Enemy)
-tiles.placeOnTile(inim1, tiles.getTileLocation(14, 6))
-inim1.setVelocity(40, 0)
-let inim2 = sprites.create(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . 1 . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    . . . . . . f f f f f . . . . . 
-    `, SpriteKind.Enemy)
-tiles.placeOnTile(inim2, tiles.getTileLocation(40, 5))
-inim2.setVelocity(40, 0)
+tiles.setCurrentTilemap(tilemap`level9`)
+spawnInimigo1(11, 15)
+spawnInimigo2(36, 14)
+spawnInimigo3(45, 14)
+spawnInimigo4(82, 11)
+spawnInimigo5(90, 11)
+spawnInimigo6(103, 11)
 game.showLongText("Use as setas para se mover", DialogLayout.Bottom)
 game.showLongText("Mate os inimigos para ganhar pontos", DialogLayout.Bottom)
 game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
@@ -681,7 +733,7 @@ inimAti2 = sprites.create(img`
     . . . . . e e e e e e . . . . . 
     . . . . . e e e e e e . . . . . 
     `, SpriteKind.Shooting_enemy)
-inimAti3 = sprites.create(img`
+let inimAti3 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
@@ -699,7 +751,7 @@ inimAti3 = sprites.create(img`
     . . . . . e e e e e e . . . . . 
     . . . . . e e e e e e . . . . . 
     `, SpriteKind.Shooting_enemy)
-inimigo_atira = sprites.create(img`
+let inimigo_atira = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
@@ -717,8 +769,7 @@ inimigo_atira = sprites.create(img`
     . . . . . e e e e e e . . . . . 
     . . . . . e e e e e e . . . . . 
     `, SpriteKind.Shooting_enemy)
-inimAti2.setPosition(131, 40)
-level = 0
+inimAti2.setPosition(131, 100)
 prota = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
