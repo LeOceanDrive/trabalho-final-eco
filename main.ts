@@ -5,18 +5,14 @@ namespace SpriteKind {
     export const flyingEnemy = SpriteKind.create()
     export const boss = SpriteKind.create()
     export const wave = SpriteKind.create()
+    export const Clock = SpriteKind.create()
+    export const Aura = SpriteKind.create()
 }
-/**
- * USE ESSAS FUNÇÕES
- */
 /**
  * Boss Behavior
  */
 /**
- * Dash
- */
-/**
- * Pulo
+ * USE ESSAS FUNÇÕES
  */
 // Onda
 function spawnBoss (x: number, y: number) {
@@ -120,6 +116,10 @@ function spawnInimigo2 (x: number, y: number) {
 function getDistance (sprite1: Sprite, sprite2: Sprite) {
     return Math.sqrt(Math.abs(sprite1.x - sprite2.x) ** 2 + Math.abs(sprite1.y - sprite2.y) ** 2)
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Clock, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    info.changeCountdownBy(20)
+})
 function spawnInimigo1 (x: number, y: number) {
     inimigo = sprites.create(img`
         . . . . . . . . . . . . . . . . 
@@ -197,6 +197,11 @@ sprites.onOverlap(SpriteKind.Shooting_enemy, SpriteKind.Projectile, function (sp
     info.changeScoreBy(1)
     sprites.destroy(inimAti2)
 })
+sprites.onOverlap(SpriteKind.Aura, SpriteKind.flyingEnemy, function (sprite, otherSprite) {
+    if (getDistance(prota, flying) < 50) {
+        otherSprite.follow(prota, 75)
+    }
+})
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
     prota.setImage(img`
         . . . . . . . . . . . . . . . . 
@@ -218,6 +223,7 @@ controller.down.onEvent(ControllerButtonEvent.Released, function () {
         `)
 })
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite6, otherSprite3) {
+    sprites.destroy(sprite6)
     sprites.destroy(otherSprite3)
     info.changeScoreBy(1)
 })
@@ -282,11 +288,6 @@ function spawnInimigo4 (x: number, y: number) {
     inim2.setVelocity(40, 0)
     tiles.placeOnTile(inim2, tiles.getTileLocation(x, y))
 }
-sprites.onCreated(SpriteKind.flyingEnemy, function (sprite) {
-    if (getDistance(prota, sprite) < 10) {
-        sprite.follow(prota)
-    }
-})
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.flyingEnemy, function (sprite, otherSprite) {
     sprites.destroy(sprite)
     sprites.destroy(otherSprite)
@@ -330,27 +331,6 @@ function dealDamage () {
         }
     }
 }
-function spawnFlying3 (x: number, y: number) {
-    flying3 = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . 1 1 1 . . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . . . 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.flyingEnemy)
-    tiles.placeOnTile(flying3, tiles.getTileLocation(x, y))
-}
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.boss, function (sprite, otherSprite) {
     if (bossDamagable == 1) {
         info.changeScoreBy(1)
@@ -362,27 +342,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.flyingEnemy, function (sprite, o
     dealDamage()
     sprites.destroy(otherSprite)
 })
-function spawnFlying2 (x: number, y: number) {
-    flying2 = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . 1 1 1 . . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . . . 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.flyingEnemy)
-    tiles.placeOnTile(flying2, tiles.getTileLocation(x, y))
-}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite11, otherSprite5) {
     if (prota.vy > 0) {
         info.changeScoreBy(1)
@@ -446,6 +405,12 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (spri
     sprites.destroy(otherSprite4)
     dealDamage()
 })
+/**
+ * Dash
+ */
+/**
+ * Pulo
+ */
 // Fraco
 sprites.onCreated(SpriteKind.boss, function (sprite) {
     sprite.setBounceOnWall(true)
@@ -555,24 +520,44 @@ function spawnInimigo3 (x: number, y: number) {
     inim2.setVelocity(40, 0)
     tiles.placeOnTile(inim2, tiles.getTileLocation(x, y))
 }
+function spawnClock (x: number, y: number) {
+    Watch = sprites.create(img`
+        . . . . . . . . . 5 5 . . . . . 
+        . . . . . . . . 5 . . 5 5 . . . 
+        . . . . . . . 5 . . . . . 5 . . 
+        . . . . . 5 5 5 5 5 5 . . . 5 5 
+        . . . . 5 1 1 1 1 1 1 5 . . . . 
+        . . . 5 1 1 1 f 1 1 1 1 5 . . . 
+        . . 5 1 1 1 1 f 1 1 1 1 1 5 . . 
+        . . 5 1 1 1 1 f 1 1 f 1 1 5 . . 
+        . . 5 1 1 1 1 f 1 f 1 1 1 5 . . 
+        . . 5 1 1 1 1 f f 1 1 1 1 5 . . 
+        . . 5 1 1 1 1 1 1 1 1 1 1 5 . . 
+        . . 5 1 1 1 1 1 1 1 1 1 1 5 . . 
+        . . . 5 1 1 1 1 1 1 1 1 5 . . . 
+        . . . . 5 1 1 1 1 1 1 5 . . . . 
+        . . . . . 5 5 5 5 5 5 . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Clock)
+    tiles.placeOnTile(Watch, tiles.getTileLocation(x, y))
+}
 let lastY = 0
 let lastLastY = 0
+let Watch: Sprite = null
 let waveprojectile: Sprite = null
 let bala_inimiga: Sprite = null
-let flying: Sprite = null
 let inim5: Sprite = null
-let flying2: Sprite = null
-let flying3: Sprite = null
+let bossDamagable = 0
 let inim2: Sprite = null
 let inim3: Sprite = null
 let inim4: Sprite = null
+let flying: Sprite = null
 let bala: Sprite = null
 let inimigo: Sprite = null
 let inim1: Sprite = null
 let parryState = 0
 let bosstaHP = 0
 let bossta: Sprite = null
-let bossDamagable = 0
 let last_vx = 0
 let prota: Sprite = null
 let inimAti2: Sprite = null
@@ -713,6 +698,7 @@ game.showLongText("Mate os inimigos para ganhar pontos", DialogLayout.Bottom)
 game.showLongText("Chegue ao final para passar de fase", DialogLayout.Bottom)
 info.setScore(0)
 info.setLife(5)
+info.startCountdown(60)
 parryUsable = 1
 damagable = 1
 inimAti2 = sprites.create(img`
@@ -792,17 +778,41 @@ prota.setPosition(15, 11)
 scene.cameraFollowSprite(prota)
 controller.moveSprite(prota, 100, 0)
 prota.ay = 300
-last_vx = 100
-info.startCountdown(60)
-bossDamagable = 0
-game.onUpdateInterval(5000, function () {
-    inim1.setVelocity(40, 0)
-    inim2.setVelocity(40, 0)
-    inimigo.setVelocity(40, 0)
+last_vx = 50
+spawnFlying(2, 2)
+spawnFlying(20, 5)
+let aurafarmed = sprites.create(img`
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+    `, SpriteKind.Aura)
+aurafarmed.follow(prota, 500)
+aurafarmed.setFlag(SpriteFlag.GhostThroughWalls, true)
+aurafarmed.setScale(6, ScaleAnchor.Middle)
+aurafarmed.setFlag(SpriteFlag.Invisible, true)
+aurafarmed.setFlag(SpriteFlag.GhostThroughTiles, true)
+spawnClock(1, 9)
+game.onUpdate(function () {
+    if (prota.vx != 0) {
+        last_vx = prota.vx * 1.5
+    }
 })
 game.onUpdateInterval(50, function () {
     lastLastY = lastY
-    lastY = prota.x
+    lastY = prota.y
 })
 game.onUpdateInterval(2000, function () {
     for (let inimigo_atira2 of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
@@ -849,10 +859,5 @@ game.onUpdateInterval(2000, function () {
             bala_inimiga.vx = -100
             bala_inimiga.setPosition(inimigo_atira2.x, inimigo_atira2.y)
         }
-    }
-})
-game.onUpdateInterval(100, function () {
-    if (prota.vx != 0) {
-        last_vx = prota.vx * 1.5
     }
 })
