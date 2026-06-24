@@ -42,6 +42,7 @@ function spawnBoss (x: number, y: number) {
         `, SpriteKind.boss)
     bosstaHP = 100
     tiles.placeOnTile(bossta, tiles.getTileLocation(x, y))
+    bossta.ay = 300
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.boss, function (sprite, otherSprite) {
     dealDamage()
@@ -49,6 +50,20 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.boss, function (sprite, otherSpr
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (prota.isHittingTile(CollisionDirection.Bottom)) {
         prota.vy = -175
+        music.play(music.createSoundEffect(WaveShape.Square, 400, 600, 255, 255, 100, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.UntilDone)
+    }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.flyingEnemy, function (sprite4, otherSprite) {
+    if (prota.vy > 0) {
+        prota.setVelocity(0, -100)
+        info.changeScoreBy(1)
+        sprites.destroy(otherSprite)
+        damagable = 0
+        pause(50)
+        damagable = 1
+    } else if (prota.vy <= 0) {
+        dealDamage()
+        sprites.destroy(otherSprite)
     }
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -101,7 +116,6 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
         prota,
         [img`
             . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
             . . . . . . f f f f . . . . . . 
             . . . . . f 7 7 7 7 f . . . . . 
             . . . . f f 7 7 7 7 f f . . . . 
@@ -115,11 +129,11 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . f 7 7 7 7 f . . . . . 
             . . . . . f 7 f f 7 f . . . . . 
             . . . . . . e e . e e . . . . . 
+            . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `,img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
-            . . . . . . . . . . . . . . . . 
             . . . . . . f f f f . . . . . . 
             . . . . . f 7 7 7 7 f . . . . . 
             . . . . f f 7 7 7 7 f f . . . . 
@@ -132,6 +146,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . a a c 4 a 7 f . . . . . 
             . . . . . f 7 f f 7 f . . . . . 
             . . . . . . e e . e e . . . . . 
+            . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `],
         500,
@@ -249,7 +264,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, prota, last_vx, 0)
-        bala.y = prota.y + 5
+        bala.y = prota.y + 3
     } else {
         bala = sprites.createProjectileFromSprite(img`
             . . . . . . . . . . . . . . . . 
@@ -269,8 +284,10 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             `, prota, last_vx, 0)
+        bala.y = prota.y + 1
     }
-    pause(100)
+    music.play(music.melodyPlayable(music.pewPew), music.PlaybackMode.UntilDone)
+    pause(300)
 })
 sprites.onOverlap(SpriteKind.Shooting_enemy, SpriteKind.Projectile, function (sprite5, otherSprite2) {
     sprites.destroy(otherSprite2)
@@ -279,51 +296,95 @@ sprites.onOverlap(SpriteKind.Shooting_enemy, SpriteKind.Projectile, function (sp
     sprites.destroy(inimigo_atira)
 })
 sprites.onOverlap(SpriteKind.Aura, SpriteKind.flyingEnemy, function (sprite, otherSprite) {
-    if (getDistance(prota, flying) < 50) {
+    if (getDistance(prota, otherSprite) < 50) {
         otherSprite.follow(prota, 75)
     }
 })
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
-    animation.runImageAnimation(
-    prota,
-    [img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . f f f f . . . . . . 
-        . . . . . f 7 7 7 7 f . . . . . 
-        . . . . f f 7 7 7 7 f f . . . . 
-        . . . . f 7 f f f f f f . . . . 
-        . . . . f f f 8 4 8 f . . . . . 
-        . . . . . f 4 4 4 4 f . . . . . 
-        . . . . . f b c c c c c a a . . 
-        . . . . . f b c c c c c a a . . 
-        . . . . a b c c a a a a 4 . . . 
-        . . . . a a c 4 a 7 f . . . . . 
-        . . . . . f 7 7 7 7 f . . . . . 
-        . . . . . f 7 f f 7 f . . . . . 
-        . . . . . . e e . e e . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `,img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . f f f f . . . . . . 
-        . . . . . f 7 7 7 7 f . . . . . 
-        . . . . f f 7 7 7 7 f f . . . . 
-        . . . . f 7 f f f f f f . . . . 
-        . . . . f f f 8 4 8 f . . . . . 
-        . . . . . f 4 4 4 4 f . . . . . 
-        . . . . . f b c c c c c a a . . 
-        . . . . . f b c c c c c a a . . 
-        . . . . a b c c a a a a 4 . . . 
-        . . . . a a c 4 a 7 f . . . . . 
-        . . . . . f 7 f f 7 f . . . . . 
-        . . . . . . e e . e e . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `],
-    500,
-    true
-    )
+    if (last_vx > 0) {
+        animation.runImageAnimation(
+        prota,
+        [img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . f f f f . . . . . . 
+            . . . . . f 7 7 7 7 f . . . . . 
+            . . . . f f 7 7 7 7 f f . . . . 
+            . . . . f 7 f f f f f f . . . . 
+            . . . . f f f 8 4 8 f . . . . . 
+            . . . . . f 4 4 4 4 f . . . . . 
+            . . . . . f b c c c c c a a . . 
+            . . . . . f b c c c c c a a . . 
+            . . . . a b c c a a a a 4 . . . 
+            . . . . a a c 4 a 7 f . . . . . 
+            . . . . . f 7 7 7 7 f . . . . . 
+            . . . . . f 7 f f 7 f . . . . . 
+            . . . . . . e e . e e . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `,img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . f f f f . . . . . . 
+            . . . . . f 7 7 7 7 f . . . . . 
+            . . . . f f 7 7 7 7 f f . . . . 
+            . . . . f 7 f f f f f f . . . . 
+            . . . . f f f 8 4 8 f . . . . . 
+            . . . . . f 4 4 4 4 f . . . . . 
+            . . . . . f b c c c c c a a . . 
+            . . . . . f b c c c c c a a . . 
+            . . . . a b c c a a a a 4 . . . 
+            . . . . a a c 4 a 7 f . . . . . 
+            . . . . . f 7 f f 7 f . . . . . 
+            . . . . . . e e . e e . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `],
+        500,
+        true
+        )
+    }
+    if (last_vx < 0) {
+        animation.runImageAnimation(
+        prota,
+        [img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . f f f f . . . . . . 
+            . . . . . f 7 7 7 7 f . . . . . 
+            . . . . f f 7 7 7 7 f f . . . . 
+            . . . . f f f f f f 7 f . . . . 
+            . . . . . f 8 4 8 f f f . . . . 
+            . . . . . f 4 4 4 4 f . . . . . 
+            . . a a c c c c c b f . . . . . 
+            . . a a c c c c c b f . . . . . 
+            . . . 4 a a a a c c b a . . . . 
+            . . . . . f 7 a 4 c a a . . . . 
+            . . . . . f 7 7 7 7 f . . . . . 
+            . . . . . f 7 f f 7 f . . . . . 
+            . . . . . e e . e e . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `,img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . f f f f . . . . . . 
+            . . . . . f 7 7 7 7 f . . . . . 
+            . . . . f f 7 7 7 7 f f . . . . 
+            . . . . f f f f f f 7 f . . . . 
+            . . . . . f 8 4 8 f f f . . . . 
+            . . . . . f 4 4 4 4 f . . . . . 
+            . . a a c c c c c b f . . . . . 
+            . . a a c c c c c b f . . . . . 
+            . . . 4 a a a a c c b a . . . . 
+            . . . . . f 7 a 4 c a a . . . . 
+            . . . . . f 7 f f 7 f . . . . . 
+            . . . . . e e . e e . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `],
+        500,
+        true
+        )
+    }
 })
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite6, otherSprite3) {
     sprites.destroy(sprite6)
@@ -476,8 +537,10 @@ controller.left.onEvent(ControllerButtonEvent.Released, function () {
     )
 })
 info.onCountdownEnd(function () {
+    music.stopAllSounds()
     game.gameOver(false)
     game.setGameOverScoringType(game.ScoringType.HighScore)
+    music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.UntilDone)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite4, otherSprite) {
     if (prota.vy > 0) {
@@ -491,9 +554,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shooting_enemy, function (sprite
         dealDamage()
         sprites.destroy(otherSprite)
     }
-})
-scene.onHitWall(SpriteKind.Enemy, function (sprite, location) {
-	
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     animation.runImageAnimation(
@@ -538,11 +598,15 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     )
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile17`, function (sprite, location) {
+    music.stopAllSounds()
+    music.play(music.melodyPlayable(music.beamUp), music.PlaybackMode.UntilDone)
+    music.play(music.stringPlayable("G B A G C5 B A B ", 200), music.PlaybackMode.UntilDone)
     game.splash("Parabéns soldado!")
     game.splash("Você trouxe democracia para esse planeta!")
     game.splash("E consegui petróleo em troca!")
     game.splash("Nosso país te agradece imensamente")
     game.gameOver(true)
+    game.setGameOverEffect(true, effects.confetti)
     game.setGameOverMessage(true, "WELL DONE!")
     game.setGameOverScoringType(game.ScoringType.HighScore)
 })
@@ -552,25 +616,27 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.flyingEnemy, function (sprit
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava1, function (sprite8, location4) {
     info.setLife(0)
+    music.stopAllSounds()
+    music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.UntilDone)
 })
 function spawnInimigoAtira (x: number, y: number) {
     inimigo_atira = sprites.create(img`
         . . . . . . . . . . . . . . . . 
-        . . . . . 1 1 1 1 1 1 1 . . . . 
-        . . . . 1 1 1 1 1 1 1 1 1 . . . 
-        . . . 1 1 1 1 f f f 1 1 1 1 . . 
-        . . . 1 1 1 f 1 1 1 f 1 1 1 . . 
-        . . . 1 1 1 f 1 1 1 f 1 1 1 . . 
-        . . . 1 1 1 f 1 1 1 f 1 1 1 . . 
-        . . . 1 1 1 f 1 1 1 f 1 1 1 . . 
-        . . . 1 1 1 f 1 1 1 f 1 1 1 . . 
-        . . . 1 1 1 1 f f f 1 1 1 1 . . 
-        . . . . 1 1 1 1 1 1 1 1 1 . . . 
-        . . . 1 1 1 1 1 1 1 1 1 1 . . . 
-        . . . 1 . 1 . . . . . 1 1 1 . . 
-        . . 1 1 . . 1 . . . 1 . . 1 1 . 
-        . . 1 . . . 1 . . . 1 . . . 1 . 
-        . . . . . . . 1 . 1 . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . 6 6 6 6 d . . . . . . . 
+        . . . 6 d 6 6 6 6 . . . . . . . 
+        . . 6 d 6 . . 6 6 . . . . . . . 
+        . . 6 6 6 . . d 6 6 . . . . . . 
+        . 2 . . . . . . d 6 6 . . . . . 
+        . . . . . . . . . d 6 . . . . . 
+        . . . . . . . . . d 6 . . . . . 
+        . . . . . . . . . d 6 . . . . . 
+        . . . . . . . . d 6 6 . . . . . 
+        . . . . . . 6 6 6 6 . . . 6 . . 
+        . . . . d 6 6 6 . . . 6 6 d . . 
+        . . . d 6 6 6 6 6 6 6 6 6 d . . 
+        . . . 6 6 6 6 6 6 6 6 d d . . . 
+        . . . . . . . . . . . . . . . . 
         `, SpriteKind.Shooting_enemy)
     animation.runImageAnimation(
     inimigo_atira,
@@ -627,18 +693,30 @@ sprites.onDestroyed(SpriteKind.boss, function (sprite) {
     tiles.setTileAt(tiles.getTileLocation(237, 10), assets.tile`myTile17`)
 })
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    animation.runImageAnimation(
-    prota,
-    assets.animation`agachado`,
-    100,
-    false
-    )
+    if (last_vx < 0) {
+        animation.runImageAnimation(
+        prota,
+        assets.animation`agachado2`,
+        100,
+        false
+        )
+    }
+    if (last_vx > 0) {
+        animation.runImageAnimation(
+        prota,
+        assets.animation`agachado0`,
+        100,
+        false
+        )
+    }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function (sprite, location) {
     spawnBoss(252, 10)
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile11`, function (sprite8, location4) {
     info.setLife(0)
+    music.stopAllSounds()
+    music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.UntilDone)
 })
 function dealDamage () {
     if (damagable == 1) {
@@ -679,23 +757,25 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.flyingEnemy, function (sprite, o
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile4`, function (sprite8, location4) {
     info.setLife(0)
+    music.stopAllSounds()
+    music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.UntilDone)
 })
 function spawnFlying (x: number, y: number) {
     flying = sprites.create(img`
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
-        . . . . . . 1 1 1 . . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . . . 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 1 1 1 1 . . . . . . 
-        . . . . . 1 . 1 . 1 . . . . . . 
+        . . . . . . . 6 6 . . . . . . . 
+        . . . . . . 6 6 9 6 . . . . . . 
+        . . . 6 6 6 9 9 9 9 6 6 6 . . . 
+        . . 6 9 9 8 8 8 8 9 9 9 9 6 . . 
+        . . 6 9 8 8 8 8 8 8 9 9 9 6 . . 
+        . 6 9 8 8 6 8 8 8 8 9 9 9 9 6 . 
+        . 6 8 8 6 2 6 8 8 8 9 9 9 9 6 . 
+        . 6 8 8 6 2 6 8 8 8 9 9 9 9 6 . 
+        . . 6 8 8 6 8 8 8 8 9 9 9 6 . . 
+        . . . 6 8 8 8 8 8 9 9 9 6 . . . 
+        . . . 6 9 8 8 8 9 9 9 9 6 . . . 
+        . . . . 6 6 6 6 6 6 6 6 . . . . 
         . . . . . . . . . . . . . . . . 
         . . . . . . . . . . . . . . . . 
         `, SpriteKind.flyingEnemy)
@@ -821,8 +901,8 @@ let lastLastY = 0
 let Watch: Sprite = null
 let waveprojectile: Sprite = null
 let bala_inimiga: Sprite = null
-let bossDamagable = 0
 let flying: Sprite = null
+let bossDamagable = 0
 let inimigo_atira: Sprite = null
 let bala: Sprite = null
 let parryState = 0
@@ -972,6 +1052,7 @@ game.showLongText("\"Dialogue\" com o líder do planeta para vencer!", DialogLay
 info.setScore(0)
 info.setLife(5)
 info.startCountdown(50)
+music.play(music.stringPlayable("D C D E D D E D ", 400), music.PlaybackMode.LoopingInBackground)
 parryUsable = 1
 damagable = 1
 prota = sprites.create(img`
@@ -1068,6 +1149,104 @@ game.onUpdate(function () {
         last_vx = prota.vx * 1.5
     }
 })
+game.onUpdate(function () {
+    for (let bala_inimiga of sprites.allOfKind(SpriteKind.Enemy_Projectile)) {
+        if (bala_inimiga.isHittingTile(CollisionDirection.Left)) {
+            sprites.destroy(bala_inimiga)
+        }
+        if (bala_inimiga.isHittingTile(CollisionDirection.Right)) {
+            sprites.destroy(bala_inimiga)
+        }
+    }
+})
+game.onUpdate(function () {
+    for (let flying of sprites.allOfKind(SpriteKind.flyingEnemy)) {
+        while (flying.vx != 0) {
+            if (flying.vx < 0) {
+                flying.setImage(img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 6 6 . . . . . . . 
+                    . . . . . . 6 6 9 6 . . . . . . 
+                    . . . 6 6 6 9 9 9 9 6 6 6 . . . 
+                    . . 6 9 9 8 8 8 8 9 9 9 9 6 . . 
+                    . . 6 9 8 8 8 8 8 8 9 9 9 6 . . 
+                    . 6 9 8 8 6 8 8 8 8 9 9 9 9 6 . 
+                    . 6 8 8 6 2 6 8 8 8 9 9 9 9 6 . 
+                    . 6 8 8 6 2 6 8 8 8 9 9 9 9 6 . 
+                    . . 6 8 8 6 8 8 8 8 9 9 9 6 . . 
+                    . . . 6 8 8 8 8 8 9 9 9 6 . . . 
+                    . . . 6 9 8 8 8 9 9 9 9 6 . . . 
+                    . . . . 6 6 6 6 6 6 6 6 . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `)
+            } else {
+                flying.setImage(img`
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . 6 6 . . . . . . . 
+                    . . . . . . 6 9 6 6 . . . . . . 
+                    . . . 6 6 6 9 9 9 9 6 6 6 . . . 
+                    . . 6 9 9 9 9 8 8 8 8 9 9 6 . . 
+                    . . 6 9 9 9 8 8 8 8 8 8 9 6 . . 
+                    . 6 9 9 9 9 8 8 8 8 6 8 8 9 6 . 
+                    . 6 9 9 9 9 8 8 8 6 2 6 8 8 6 . 
+                    . 6 9 9 9 9 8 8 8 6 2 6 8 8 6 . 
+                    . . 6 9 9 9 8 8 8 8 6 8 8 6 . . 
+                    . . . 6 9 9 9 8 8 8 8 8 6 . . . 
+                    . . . 6 9 9 9 9 8 8 8 9 6 . . . 
+                    . . . . 6 6 6 6 6 6 6 6 . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    . . . . . . . . . . . . . . . . 
+                    `)
+            }
+        }
+    }
+})
+game.onUpdate(function () {
+    for (let inimigo_atira of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
+        if (prota.x < inimigo_atira.x) {
+            inimigo_atira.setImage(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . 6 6 6 6 d . . . . . . . 
+                . . . 6 d 6 6 6 6 . . . . . . . 
+                . . 6 d 6 . . 6 6 . . . . . . . 
+                . . 6 6 6 . . d 6 6 . . . . . . 
+                . 2 . . . . . . d 6 6 . . . . . 
+                . . . . . . . . . d 6 . . . . . 
+                . . . . . . . . . d 6 . . . . . 
+                . . . . . . . . . d 6 . . . . . 
+                . . . . . . . . d 6 6 . . . . . 
+                . . . . . . 6 6 6 6 . . . 6 . . 
+                . . . . d 6 6 6 . . . 6 6 d . . 
+                . . . d 6 6 6 6 6 6 6 6 6 d . . 
+                . . . 6 6 6 6 6 6 6 6 d d . . . 
+                . . . . . . . . . . . . . . . . 
+                `)
+        } else {
+            inimigo_atira.setImage(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . d 6 6 6 6 . . . . 
+                . . . . . . . 6 6 6 6 d 6 . . . 
+                . . . . . . . 6 6 . . 6 d 6 . . 
+                . . . . . . 6 6 d . . 6 6 6 . . 
+                . . . . . 6 6 d . . . . . . 2 . 
+                . . . . . 6 d . . . . . . . . . 
+                . . . . . 6 d . . . . . . . . . 
+                . . . . . 6 d . . . . . . . . . 
+                . . . . . 6 6 d . . . . . . . . 
+                . . 6 . . . 6 6 6 6 . . . . . . 
+                . . d 6 6 . . . 6 6 6 d . . . . 
+                . . d 6 6 6 6 6 6 6 6 6 d . . . 
+                . . . d d 6 6 6 6 6 6 6 6 . . . 
+                . . . . . . . . . . . . . . . . 
+                `)
+        }
+    }
+})
 game.onUpdateInterval(50, function () {
     lastLastY = lastY
     lastY = prota.y
@@ -1094,7 +1273,7 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 `, SpriteKind.Enemy_Projectile)
             bala_inimiga.vx = 100
-            bala_inimiga.setPosition(inimigo_atira2.x, inimigo_atira2.y)
+            bala_inimiga.setPosition(inimigo_atira2.x, inimigo_atira2.y - 5)
         } else {
             bala_inimiga = sprites.create(img`
                 . . . . . . . . . . . . . . . . 
@@ -1115,7 +1294,7 @@ game.onUpdateInterval(2000, function () {
                 . . . . . . . . . . . . . . . . 
                 `, SpriteKind.Enemy_Projectile)
             bala_inimiga.vx = -100
-            bala_inimiga.setPosition(inimigo_atira2.x, inimigo_atira2.y)
+            bala_inimiga.setPosition(inimigo_atira2.x, inimigo_atira2.y - 5)
         }
     }
 })
