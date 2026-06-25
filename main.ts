@@ -22,27 +22,7 @@ namespace SpriteKind {
  */
 // Onda
 function spawnBoss (x: number, y: number) {
-    bossta = sprites.create(img`
-        . . . . . . f f f f f . . . . . 
-        . . . . f f f 3 1 1 f f . . . . 
-        . . . f f 3 3 3 3 3 1 f f . . . 
-        . . f f 3 f 3 3 3 3 3 3 f . . . 
-        . . f 3 3 3 3 f 3 3 f 3 f f . . 
-        . f f 3 3 3 f f 3 3 3 3 3 f . . 
-        f f 3 f 3 f f 3 3 3 3 3 3 f . . 
-        . f 3 f 3 3 3 3 3 3 3 3 3 f f f 
-        . f 3 f f 3 3 3 3 3 f f 3 f . . 
-        . f 3 3 f f f f f f f f 3 f . . 
-        . f 3 3 3 3 f f f 3 3 3 3 f . . 
-        . . f f 3 3 3 3 3 3 3 3 f f . . 
-        . . . f f f f f f f f f f . . . 
-        . . . f . . . . . . . . f . . . 
-        . . . f . . . . . . . . f . . . 
-        . f f f . . . . . . f f f . . . 
-        `, SpriteKind.boss)
-    bosstaHP = 100
-    tiles.placeOnTile(bossta, tiles.getTileLocation(x, y))
-    bossta.ay = 300
+	
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.boss, function (sprite, otherSprite) {
     dealDamage()
@@ -296,8 +276,8 @@ sprites.onOverlap(SpriteKind.Shooting_enemy, SpriteKind.Projectile, function (sp
     sprites.destroy(inimigo_atira)
 })
 sprites.onOverlap(SpriteKind.Aura, SpriteKind.flyingEnemy, function (sprite, otherSprite) {
-    if (getDistance(prota, otherSprite) < 50) {
-        otherSprite.follow(prota, 75)
+    if (getDistance(prota, otherSprite) < 100) {
+        otherSprite.follow(prota)
     }
 })
 controller.down.onEvent(ControllerButtonEvent.Released, function () {
@@ -713,7 +693,32 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function (sprite, location) {
     tiles.setTileAt(location, sprites.dungeon.darkGroundCenter)
-    spawnBoss(240, 5)
+    bossta = sprites.create(img`
+        . . . . . . f f f f f . . . . . 
+        . . . . f f f 3 1 1 f f . . . . 
+        . . . f f 3 3 3 3 3 1 f f . . . 
+        . . f f 3 f 3 3 3 3 3 3 f . . . 
+        . . f 3 3 3 3 f 3 3 f 3 f f . . 
+        . f f 3 3 3 f f 3 3 3 3 3 f . . 
+        f f 3 f 3 f f 3 3 3 3 3 3 f . . 
+        . f 3 f 3 3 3 3 3 3 3 3 3 f f f 
+        . f 3 f f 3 3 3 3 3 f f 3 f . . 
+        . f 3 3 f f f f f f f f 3 f . . 
+        . f 3 3 3 3 f f f 3 3 3 3 f . . 
+        . . f f 3 3 3 3 3 3 3 3 f f . . 
+        . . . f f f f f f f f f f . . . 
+        . . . f . . . . . . . . f . . . 
+        . . . f . . . . . . . . f . . . 
+        . f f f . . . . . . f f f . . . 
+        `, SpriteKind.boss)
+    bosstaHP = 10
+    bossDamagable = 1
+    tiles.placeOnTile(bossta, tiles.getTileLocation(240, 5))
+    bossta.ay = 700
+    bossta.setScale(3, ScaleAnchor.Middle)
+    bossta.setFlag(SpriteFlag.BounceOnWall, true)
+    bossta.setVelocity(100, 0)
+    info.changeCountdownBy(100)
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile11`, function (sprite8, location4) {
     info.setLife(0)
@@ -747,11 +752,48 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite4, otherS
     }
 })
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.boss, function (sprite, otherSprite) {
+    sprites.destroy(sprite)
     if (bossDamagable == 1) {
         info.changeScoreBy(1)
         bosstaHP += -1
+        bossta.setImage(img`
+            . . . . . . f f f f f . . . . . 
+            . . . . f f f 6 1 1 f f . . . . 
+            . . . f f 6 6 6 6 6 1 f f . . . 
+            . . f f 6 f 6 6 6 6 6 6 f . . . 
+            . . f 6 6 6 6 f 6 6 f 6 f f . . 
+            . f f 6 6 6 f f 6 6 6 6 6 f . . 
+            f f 6 6 6 f f 6 6 6 6 6 6 f . . 
+            . f 6 6 6 6 6 6 6 6 6 6 6 f f f 
+            . f 6 f f f f f f f f 6 6 f . . 
+            . f 8 6 6 6 6 6 6 6 f f 6 f . . 
+            . f 8 8 6 6 6 6 6 6 6 f 6 f . . 
+            . . f f 8 8 8 8 6 6 6 6 f f . . 
+            . . . f f f f f f f f f f . . . 
+            . . . f . . . . . . . . f . . . 
+            . . . f . . . . . . . . f . . . 
+            . f f f . . . . . . f f f . . . 
+            `)
+        pause(200)
+        bossta.setImage(img`
+            . . . . . . f f f f f . . . . . 
+            . . . . f f f 3 1 1 f f . . . . 
+            . . . f f 3 3 3 3 3 1 f f . . . 
+            . . f f 3 f 3 3 3 3 3 3 f . . . 
+            . . f 3 3 3 3 f 3 3 f 3 f f . . 
+            . f f 3 3 3 f f 3 3 3 3 3 f . . 
+            f f 3 f 3 f f 3 3 3 3 3 3 f . . 
+            . f 3 f 3 3 3 3 3 3 3 3 3 f f f 
+            . f 3 f f 3 3 3 3 3 f f 3 f . . 
+            . f 3 3 f f f f f f f f 3 f . . 
+            . f 3 3 3 3 f f f 3 3 3 3 f . . 
+            . . f f 3 3 3 3 3 3 3 3 f f . . 
+            . . . f f f f f f f f f f . . . 
+            . . . f . . . . . . . . f . . . 
+            . . . f . . . . . . . . f . . . 
+            . f f f . . . . . . f f f . . . 
+            `)
     }
-    sprites.destroy(sprite)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.flyingEnemy, function (sprite, otherSprite) {
     dealDamage()
@@ -790,93 +832,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_Projectile, function (spri
     sprites.destroy(otherSprite4)
     dealDamage()
 })
-// Fraco
-sprites.onCreated(SpriteKind.boss, function (sprite) {
-    sprite.setBounceOnWall(true)
-    sprite.setScale(3, ScaleAnchor.Middle)
-    while (bosstaHP > 0) {
-        for (let index = 0; index < 2; index++) {
-            sprite.setVelocity(50, 0)
-            pause(2000)
-            sprite.setVelocity(-50, 0)
-            pause(5000)
-            sprite.setVelocity(50, 50)
-            pause(1000)
-            sprite.setVelocity(0, 50)
-            pause(1000)
-            sprite.setVelocity(-50, 50)
-            pause(1000)
-            sprite.setVelocity(0, 50)
-        }
-        pause(5000)
-        sprite.setImage(img`
-            . . . . . . f f f f f . . . . . 
-            . . . . f f f 6 1 1 f f . . . . 
-            . . . f f 6 6 6 6 6 1 f f . . . 
-            . . f f 6 f 6 6 6 6 6 6 f . . . 
-            . . f 6 6 6 6 f 6 6 f 6 f f . . 
-            . f f 6 6 6 f f 6 6 6 6 6 f . . 
-            f f 6 6 6 f f 6 6 6 6 6 6 f . . 
-            . f 6 6 6 6 6 6 6 6 6 6 6 f f f 
-            . f 6 f f f f f f f f 6 6 f . . 
-            . f 8 6 6 6 6 6 6 6 f f 6 f . . 
-            . f 8 8 6 6 6 6 6 6 6 f 6 f . . 
-            . . f f 8 8 8 8 6 6 6 6 f f . . 
-            . . . f f f f f f f f f f . . . 
-            . . . f . . . . . . . . f . . . 
-            . . . f . . . . . . . . f . . . 
-            . f f f . . . . . . f f f . . . 
-            `)
-        bossDamagable = 1
-        pause(5000)
-        bossDamagable = 0
-        sprite.setImage(img`
-            . . . . . . f f f f f . . . . . 
-            . . . . f f f 3 1 1 f f . . . . 
-            . . . f f 3 3 3 3 3 1 f f . . . 
-            . . f f 3 f 3 3 3 3 3 3 f . . . 
-            . . f 3 3 3 3 f 3 3 f 3 f f . . 
-            . f f 3 3 3 f f 3 3 3 3 3 f . . 
-            f f 3 f 3 f f 3 3 3 3 3 3 f . . 
-            . f 3 f 3 3 3 3 3 3 3 3 3 f f f 
-            . f 3 f f 3 3 3 3 3 f f 3 f . . 
-            . f 3 3 f f f f f f f f 3 f . . 
-            . f 3 3 3 3 f f f 3 3 3 3 f . . 
-            . . f f 3 3 3 3 3 3 3 3 f f . . 
-            . . . f f f f f f f f f f . . . 
-            . . . f . . . . . . . . f . . . 
-            . . . f . . . . . . . . f . . . 
-            . f f f . . . . . . f f f . . . 
-            `)
-        pause(1000)
-        waveprojectile = sprites.create(img`
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            . . . . . . . 8 8 . . . . . . . 
-            `, SpriteKind.wave)
-        waveprojectile.setPosition(sprite.x, sprite.y)
-        waveprojectile.setScale(4, ScaleAnchor.Middle)
-        if (prota.x < sprite.x) {
-            waveprojectile.setVelocity(-50, 0)
-        } else {
-            waveprojectile.setVelocity(50, 0)
-        }
-    }
-    sprites.destroy(sprite, effects.spray, 5000)
-})
 function spawnClock (x: number, y: number) {
     Watch = sprites.create(img`
         . . . . . . . . . 5 5 . . . . . 
@@ -901,16 +856,15 @@ function spawnClock (x: number, y: number) {
 let lastY = 0
 let lastLastY = 0
 let Watch: Sprite = null
-let waveprojectile: Sprite = null
 let bala_inimiga: Sprite = null
 let flying: Sprite = null
 let bossDamagable = 0
+let bossta: Sprite = null
 let inimigo_atira: Sprite = null
 let bala: Sprite = null
 let parryState = 0
-let bosstaHP = 0
-let bossta: Sprite = null
 let last_vx = 0
+let bosstaHP = 0
 let parryUsable = 0
 let damagable = 0
 let prota: Sprite = null
@@ -1075,6 +1029,7 @@ prota = sprites.create(img`
     . . . . . 3 3 3 3 3 3 . . . . . 
     . . . . . 3 3 3 3 3 3 . . . . . 
     `, SpriteKind.Player)
+bosstaHP = 100
 animation.runImageAnimation(
 prota,
 [img`
@@ -1139,6 +1094,7 @@ let aurafarmed = sprites.create(img`
     6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
     `, SpriteKind.Aura)
 aurafarmed.follow(prota, 500)
+aurafarmed.setPosition(prota.x, prota.y)
 aurafarmed.setFlag(SpriteFlag.GhostThroughWalls, true)
 aurafarmed.setScale(6, ScaleAnchor.Middle)
 aurafarmed.setFlag(SpriteFlag.Invisible, true)
@@ -1161,97 +1117,12 @@ game.onUpdate(function () {
         }
     }
 })
-game.onUpdate(function () {
-    for (let flying of sprites.allOfKind(SpriteKind.flyingEnemy)) {
-        while (flying.vx != 0) {
-            if (flying.vx < 0) {
-                flying.setImage(img`
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . 6 6 . . . . . . . 
-                    . . . . . . 6 6 9 6 . . . . . . 
-                    . . . 6 6 6 9 9 9 9 6 6 6 . . . 
-                    . . 6 9 9 8 8 8 8 9 9 9 9 6 . . 
-                    . . 6 9 8 8 8 8 8 8 9 9 9 6 . . 
-                    . 6 9 8 8 6 8 8 8 8 9 9 9 9 6 . 
-                    . 6 8 8 6 2 6 8 8 8 9 9 9 9 6 . 
-                    . 6 8 8 6 2 6 8 8 8 9 9 9 9 6 . 
-                    . . 6 8 8 6 8 8 8 8 9 9 9 6 . . 
-                    . . . 6 8 8 8 8 8 9 9 9 6 . . . 
-                    . . . 6 9 8 8 8 9 9 9 9 6 . . . 
-                    . . . . 6 6 6 6 6 6 6 6 . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    `)
-            } else {
-                flying.setImage(img`
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . 6 6 . . . . . . . 
-                    . . . . . . 6 9 6 6 . . . . . . 
-                    . . . 6 6 6 9 9 9 9 6 6 6 . . . 
-                    . . 6 9 9 9 9 8 8 8 8 9 9 6 . . 
-                    . . 6 9 9 9 8 8 8 8 8 8 9 6 . . 
-                    . 6 9 9 9 9 8 8 8 8 6 8 8 9 6 . 
-                    . 6 9 9 9 9 8 8 8 6 2 6 8 8 6 . 
-                    . 6 9 9 9 9 8 8 8 6 2 6 8 8 6 . 
-                    . . 6 9 9 9 8 8 8 8 6 8 8 6 . . 
-                    . . . 6 9 9 9 8 8 8 8 8 6 . . . 
-                    . . . 6 9 9 9 9 8 8 8 9 6 . . . 
-                    . . . . 6 6 6 6 6 6 6 6 . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    `)
-            }
-        }
-    }
-})
-game.onUpdate(function () {
-    for (let inimigo_atira of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
-        if (prota.x < inimigo_atira.x) {
-            inimigo_atira.setImage(img`
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . 6 6 6 6 d . . . . . . . 
-                . . . 6 d 6 6 6 6 . . . . . . . 
-                . . 6 d 6 . . 6 6 . . . . . . . 
-                . . 6 6 6 . . d 6 6 . . . . . . 
-                . 2 . . . . . . d 6 6 . . . . . 
-                . . . . . . . . . d 6 . . . . . 
-                . . . . . . . . . d 6 . . . . . 
-                . . . . . . . . . d 6 . . . . . 
-                . . . . . . . . d 6 6 . . . . . 
-                . . . . . . 6 6 6 6 . . . 6 . . 
-                . . . . d 6 6 6 . . . 6 6 d . . 
-                . . . d 6 6 6 6 6 6 6 6 6 d . . 
-                . . . 6 6 6 6 6 6 6 6 d d . . . 
-                . . . . . . . . . . . . . . . . 
-                `)
-        } else {
-            inimigo_atira.setImage(img`
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . d 6 6 6 6 . . . . 
-                . . . . . . . 6 6 6 6 d 6 . . . 
-                . . . . . . . 6 6 . . 6 d 6 . . 
-                . . . . . . 6 6 d . . 6 6 6 . . 
-                . . . . . 6 6 d . . . . . . 2 . 
-                . . . . . 6 d . . . . . . . . . 
-                . . . . . 6 d . . . . . . . . . 
-                . . . . . 6 d . . . . . . . . . 
-                . . . . . 6 6 d . . . . . . . . 
-                . . 6 . . . 6 6 6 6 . . . . . . 
-                . . d 6 6 . . . 6 6 6 d . . . . 
-                . . d 6 6 6 6 6 6 6 6 6 d . . . 
-                . . . d d 6 6 6 6 6 6 6 6 . . . 
-                . . . . . . . . . . . . . . . . 
-                `)
-        }
-    }
-})
 game.onUpdateInterval(50, function () {
     lastLastY = lastY
     lastY = prota.y
+    if (bosstaHP < 1) {
+        sprites.destroy(bossta, effects.spray, 5000)
+    }
 })
 game.onUpdateInterval(2000, function () {
     for (let inimigo_atira2 of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
@@ -1297,6 +1168,49 @@ game.onUpdateInterval(2000, function () {
                 `, SpriteKind.Enemy_Projectile)
             bala_inimiga.vx = -100
             bala_inimiga.setPosition(inimigo_atira2.x, inimigo_atira2.y - 5)
+        }
+    }
+})
+game.onUpdateInterval(10, function () {
+    for (let inimigo_atira of sprites.allOfKind(SpriteKind.Shooting_enemy)) {
+        if (inimigo_atira.vx < 0) {
+            inimigo_atira.setImage(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . 6 6 6 6 d . . . . . . . 
+                . . . 6 d 6 6 6 6 . . . . . . . 
+                . . 6 d 6 . . 6 6 . . . . . . . 
+                . . 6 6 6 . . d 6 6 . . . . . . 
+                . 2 . . . . . . d 6 6 . . . . . 
+                . . . . . . . . . d 6 . . . . . 
+                . . . . . . . . . d 6 . . . . . 
+                . . . . . . . . . d 6 . . . . . 
+                . . . . . . . . d 6 6 . . . . . 
+                . . . . . . 6 6 6 6 . . . 6 . . 
+                . . . . d 6 6 6 . . . 6 6 d . . 
+                . . . d 6 6 6 6 6 6 6 6 6 d . . 
+                . . . 6 6 6 6 6 6 6 6 d d . . . 
+                . . . . . . . . . . . . . . . . 
+                `)
+        } else {
+            inimigo_atira.setImage(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                . . . . . . . d 6 6 6 6 . . . . 
+                . . . . . . . 6 6 6 6 d 6 . . . 
+                . . . . . . . 6 6 . . 6 d 6 . . 
+                . . . . . . 6 6 d . . 6 6 6 . . 
+                . . . . . 6 6 d . . . . . . 2 . 
+                . . . . . 6 d . . . . . . . . . 
+                . . . . . 6 d . . . . . . . . . 
+                . . . . . 6 d . . . . . . . . . 
+                . . . . . 6 6 d . . . . . . . . 
+                . . 6 . . . 6 6 6 6 . . . . . . 
+                . . d 6 6 . . . 6 6 6 d . . . . 
+                . . d 6 6 6 6 6 6 6 6 6 d . . . 
+                . . . d d 6 6 6 6 6 6 6 6 . . . 
+                . . . . . . . . . . . . . . . . 
+                `)
         }
     }
 })
