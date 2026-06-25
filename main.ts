@@ -601,6 +601,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile17`, function (sprite, 
     music.stopAllSounds()
     music.play(music.melodyPlayable(music.beamUp), music.PlaybackMode.UntilDone)
     music.play(music.stringPlayable("G B A G C5 B A B ", 200), music.PlaybackMode.UntilDone)
+    tiles.setTileAt(location, sprites.dungeon.darkGroundCenter)
     game.splash("Parabéns soldado!")
     game.splash("Você trouxe democracia para esse planeta!")
     game.splash("E consegui petróleo em troca!")
@@ -711,7 +712,8 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile2`, function (sprite, location) {
-    spawnBoss(252, 10)
+    tiles.setTileAt(location, sprites.dungeon.darkGroundCenter)
+    spawnBoss(240, 5)
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile11`, function (sprite8, location4) {
     info.setLife(0)
@@ -1113,7 +1115,7 @@ prota,
 500,
 true
 )
-tiles.placeOnTile(prota, tiles.getTileLocation(1, 25))
+tiles.placeOnTile(prota, tiles.getTileLocation(226, 15))
 scene.cameraFollowSprite(prota)
 controller.moveSprite(prota, 100, 0)
 prota.ay = 300
